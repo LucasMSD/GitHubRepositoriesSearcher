@@ -2,7 +2,6 @@ var btnAdicionar = document.querySelector('#botaoUser');
 var userNameInput = document.querySelector('#userName');
 var divHeaderElement = document.querySelector("#divHeader");
 var divReposElement = document.querySelector("#divRepos");
-var responseText;
 
 btnAdicionar.onclick = function() {
     newRequest("https://api.github.com/users/" + userNameInput.value + "/repos");
