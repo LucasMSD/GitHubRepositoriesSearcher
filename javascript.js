@@ -1,14 +1,11 @@
 var btnAdicionar = document.querySelector('#botaoUser');
 var userNameInput = document.querySelector('#userName');
-
 var divHeaderElement = document.querySelector("#divHeader");
 var divReposElement = document.querySelector("#divRepos");
 
-
-
-
 btnAdicionar.onclick = function() {
     newRequest("https://api.github.com/users/" + userNameInput.value + "/repos");
+    userNameInput.value = "";
 }
 
 function renderizarReposInfo(reposInfo) {
@@ -36,6 +33,7 @@ function renderizarReposInfo(reposInfo) {
                     li = setElement("li", undefined, "Link do repositório: ", "liInfos");
                     var a = setElement("a", undefined, v, "linkRepos");
                     a.setAttribute("href", v);
+                    a.setAttribute("target", "_blank");
                     li.appendChild(a);
                     ulRepos.appendChild(li);
                     break;
