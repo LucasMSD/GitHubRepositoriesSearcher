@@ -2,6 +2,7 @@ var btnAdicionar = document.querySelector('#botaoUser');
 var userNameInput = document.querySelector('#userName');
 var divHeaderElement = document.querySelector("#divHeader");
 var divReposElement = document.querySelector("#divRepos");
+var responseText;
 
 btnAdicionar.onclick = function() {
     newRequest("https://api.github.com/users/" + userNameInput.value + "/repos");
@@ -38,11 +39,9 @@ function renderizarReposInfo(reposInfo) {
                     ulRepos.appendChild(li);
                     break;
                 case "languages_url":
-                    //var responseText = newRequest(v);
-                    var languages = "Teste";
-                    //for (const m of Object.keys(responseText)) languages += m + ";";
-                    li = setElement("li", undefined, "Linguagens: " + languages, "liInfos");
+                    li = setElement("li", undefined, "Carregando...", "liInfos");
                     ulRepos.appendChild(li);
+                    getLanguages(languages_url, li);
                     break;
                 case "created_at":
                     li = setElement("li", undefined, "Criado em: " + setDate(v), "liInfos");
@@ -51,6 +50,24 @@ function renderizarReposInfo(reposInfo) {
                 case "updated_at":
                     li = setElement("li", undefined, "Último update: " + setDate(v), "liInfos");
                     ulRepos.appendChild(li);
+            }
+        }
+    }
+}
+
+function getLanguages(url, li) {
+    var request = new XMLHttpRequest(); 
+    request.open("GET", url);
+    request.send(null);
+    var languages = "";
+    request.onreadystatechange = function() {
+        if (request.readyState === 4) {
+            if (request.status === 200) {
+                for (const m of Object.keys(JSON.parse(request.responseText))) {
+                    languages += m + "; ";
+                }
+                li.innerHTML = "";
+                li.appendChild(document.createTextNode("Linguagens: " + languages));
             }
         }
     }
@@ -65,8 +82,8 @@ function setElement(tagName, idValue, textNode, className) {
 }
 
 function newRequest(url) {
-    axios.get(url)
-        .then(function(response){
+    axios.get(url, false)
+        .then(function(response) {
             renderizarReposInfo(response.data);
         })
         .catch(function(error) {
