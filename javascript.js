@@ -5,13 +5,13 @@ var divReposElement = document.querySelector("#divRepos");
 
 btnAdicionar.onclick = function() {
     newRequest("https://api.github.com/users/" + userNameInput.value + "/repos");
-    userNameInput.value = "";
 }
 
 function renderizarReposInfo(reposInfo) {
     divHeaderElement.innerHTML = "";
     divReposElement.innerHTML = "";
     var headerText = "Repositórios de " + userNameInput.value;
+    userNameInput.value = "";
     divHeaderElement.appendChild(setElement("h3", "headerRepos", headerText));
     divHeaderElement.appendChild(setElement("h2", "totalRepos", "Total: " + reposInfo.length));
     
