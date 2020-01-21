@@ -5,21 +5,19 @@ var divReposElement = document.querySelector("#divRepos");
 
 btnAdicionar.onclick = function() {
     newRequest("https://api.github.com/users/" + userNameInput.value + "/repos");
-    userNameInput.value = "";
 }
 
 function renderizarReposInfo(reposInfo) {
-    divHeaderElement.innerHTML = "";
-    divReposElement.innerHTML = "";
-    var headerText = "Repositórios de " + userNameInput.value;
-    divHeaderElement.appendChild(setElement("h3", "headerRepos", headerText));
+    clearElements();
+    divHeaderElement.appendChild(setElement("h3", "headerRepos", "Repositórios de " + userNameInput.value));
+    userNameInput.value = "";
     divHeaderElement.appendChild(setElement("h2", "totalRepos", "Total: " + reposInfo.length));
     
     for (infos of reposInfo) {
         var divHeaderReposElement = setElement("div", undefined, undefined, "divHeaderRepos");
         divReposElement.appendChild(divHeaderReposElement);
         divHeaderReposElement.appendChild(setElement("h1", undefined, (reposInfo.indexOf(infos) + 1) + "º:"));
-        var ulRepos = setElement("ul", "reposUser");
+        var ulRepos = setElement("ul", undefined, undefined, "reposUser");
         divReposElement.appendChild(ulRepos);
 
         for (const [k,v] of Object.entries({name, html_url, languages_url, created_at, updated_at} = infos)) {
@@ -54,24 +52,26 @@ function renderizarReposInfo(reposInfo) {
     }
 }
 
-function getLanguages(url, li) {
-    var request = new XMLHttpRequest(); 
-    request.open("GET", url);
-    request.send(null);
-    var languages = "";
-    request.onreadystatechange = function() {
-        if (request.readyState === 4) {
-            if (request.status === 200) {
-                for (const m of Object.keys(JSON.parse(request.responseText))) {
-                    languages += m + "; ";
-                }
-                li.innerHTML = "";
-                li.appendChild(document.createTextNode("Linguagens: " + languages));
-            }
-        }
-    }
+function clearElements() {
+    divHeaderElement.innerHTML = "";
+    divReposElement.innerHTML = "";
 }
 
+function getLanguages(url, li) {
+    axios.get(url)
+        .then(function(response) {
+            var languages = "";
+            console.log(response.data);
+            for (keys in response.data) {
+                languages += keys + "; ";
+            }
+            li.innerHTML = "";
+            li.appendChild(document.createTextNode("Linguages: " + languages));
+        })
+        .catch(function(error) {
+            alert(error);
+        });
+}
 function setElement(tagName, idValue, textNode, className) {
     var element = document.createElement(tagName);
     if(textNode !== undefined) element.appendChild(document.createTextNode(textNode));
@@ -81,12 +81,12 @@ function setElement(tagName, idValue, textNode, className) {
 }
 
 function newRequest(url) {
-    axios.get(url, false)
+    axios.get(url)
         .then(function(response) {
             renderizarReposInfo(response.data);
         })
         .catch(function(error) {
-            console.warn(error);
+            alert(error);
         });
 }
 
